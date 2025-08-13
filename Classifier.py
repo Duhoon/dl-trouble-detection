@@ -7,7 +7,7 @@ import os
 class Classifier:
     def __init__(self):
         self.model = self.get_model()
-        self.classes = os.listdir(path.join("dataset", "training", "resource"))
+        self.classes = ["건선", "아토피", "여드름", "정상", "주사", "지루"]
         self.class_to_idx = {cls_name: idx for idx, cls_name in enumerate(self.classes)}
         self.idx_to_class = {idx: cls_name for cls_name, idx in self.class_to_idx.items()}
 
@@ -15,8 +15,10 @@ class Classifier:
         transform = transforms.ToTensor()
         image = transform(image)
         image = image.unsqueeze(0)
-        label = self.model(image)
-        label = torch.argmax(label, dim=1).item()
+        
+        with torch.no_grad():
+            label = self.model(image)
+            label = torch.argmax(label, dim=1).item()
         return self.idx_to_class[label]
 
     def get_model(self, ):
@@ -26,6 +28,6 @@ class Classifier:
         model.classifier[1] = torch.nn.Linear(num_ftrs, 6)
         state_dict= torch.load(model_path, map_location='cpu')
         model.load_state_dict(state_dict=state_dict)
-        print(model)
+        model.eval()
         return model
     
