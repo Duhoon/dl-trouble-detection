@@ -21,6 +21,9 @@ class Advisor():
     self.answer_chain = LLMChain(llm=self.llm, prompt=self.answer_prompt)
 
   def answer(self, pred):
+    if not pred:
+      raise "결과가 입력되지 않았습니다. AI 진단을 선행해 주세요."
+
     response = self.answer_chain.invoke(
       input=pred
     )
